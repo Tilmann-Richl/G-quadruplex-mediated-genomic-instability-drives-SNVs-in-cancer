@@ -1,5 +1,5 @@
 # G-quadruplex-mediated genomic instability drives SNVs in cancer
-This repository contains the computational scripts used in the manuscript **G4-quadruplex-mediated genomic instability drives SNVs in cancer** by Richl et al. 
+This repository contains the computational scripts used in the manuscript **G-quadruplex-mediated genomic instability drives SNVs in cancer** by Richl et al. 
 
 
 ## GDC Download
@@ -75,4 +75,13 @@ bedtools closest -a G4s -b ALL_GDC_sorted.bed -D a > SNPs_closest
 # Count unique occurences of each Distance
 cut -f 22 random_SNPs_closest | sort | uniq -c | sort -r > random_exon_SNPs_closest.count
 cut -f 22 SNPs_closest | sort | uniq -c | sort -r > SNPs_closest.count
+```
+## Analyze the local density of G4s and cSNVs in CDK4 and MYC genes
+```bash
+# Extract genomic positions of coding exons from the fasta file
+grep ">" MYC.fa | awk '{print $2}' | sed 's/range=//g' | sed 's/:/\t/g' | sed 's/-/\t/g' | awk '{print $0, "ex" NR}' OFS="\t" > MYC_cds.bed
+# Intersect coding exons with G4s 
+bedtools intersect -b Na_PDS_G4s.hg38 -a MYC_cds.bed -c > MYC_cds_G4s.bed
+# Intersect with cSNVs
+bedtools intersect -a MYC_cds_G4s.bed -b ALL_GDC.sorted.bed -c > MYC_G4s_cSNVs.tsv
 ```
